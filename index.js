@@ -6,10 +6,9 @@ require("dotenv").config()
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
 app.use(cors())
-app.use(express())
+app.use(express.json())
 
-console.log();
-console.log();
+
 
 
 
@@ -29,6 +28,28 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+    const database = client.db("assignmentDB");
+    const assignmentCollection = database.collection("assignments");
+
+    // Assignment API --------------
+
+    app.get('/assignments' , async(req, res) => {
+      const cursor = assignmentCollection.find()
+      const result = await cursor.toArray(cursor);
+      res.send(result)
+    })
+
+  app.post('/assignments' , async(req, res) => {
+    const assignment = req.body;
+    console.log(assignment);
+
+    const result = await assignmentCollection.insertOne(assignment)
+   
+    res.send(result)
+  })
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -42,9 +63,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Student assignment')
 })
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`student assignment site running on ${port}`)
 })
