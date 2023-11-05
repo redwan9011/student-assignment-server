@@ -3,7 +3,7 @@ const cors = require('cors');
 const app = express()
 const port = process.env.PORT || 3000
 require("dotenv").config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 app.use(cors())
 app.use(express.json())
@@ -40,12 +40,44 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/assignments/:id' ,async (req, res) => {
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)}
+      const result =await assignmentCollection.findOne(query);
+      res.send(result)
+    })
+
   app.post('/assignments' , async(req, res) => {
     const assignment = req.body;
-    console.log(assignment);
-
     const result = await assignmentCollection.insertOne(assignment)
-   
+    res.send(result)
+  })
+
+  app.delete('/assignments/:id' , async(req, res) => {
+    const id = req.params.id;
+    const query = {_id : new ObjectId(id)}
+    const result = await assignmentCollection.deleteOne(query);
+    res.send(result)
+  })
+
+  app.put('/assignments/:id', async(req, res) => {
+    const id =req.params.id;
+    const filter = {_id: new ObjectId(id)};
+    const option = {upsert: true};
+    const assignment = req.body;
+    const updateassignment = {
+      $set: {
+        
+        tittle: assignment.tittle,
+        image: assignment.image,
+        marks: assignment.marks,
+        difficulty: assignment.difficulty,
+        date: assignment.date,
+        description: assignment.description,
+        
+      }
+    }
+    const result = await assignmentCollection.updateOne(filter, updateassignment, option);
     res.send(result)
   })
 
