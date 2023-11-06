@@ -3,11 +3,18 @@ const cors = require('cors');
 const app = express()
 const port = process.env.PORT || 3000
 require("dotenv").config()
+var jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
-app.use(cors())
+app.use(cors( {
+  origin: [
+    'http://localhost:5173'
+  ],
+  credentials: true
+}))
 app.use(express.json())
-
+app.use(cookieParser())
 
 
 
@@ -32,20 +39,43 @@ async function run() {
     const database = client.db("assignmentDB");
     const assignmentCollection = database.collection("assignments");
 
-    // Assignment API --------------
+    // ---------Auth API
 
+    app.post('/jwt' , async(req, res) => {
+      const user= req.body;
+      console.log('user token', user);
+
+      const token = jwt.sign(user, process.env.DB_SECRET_TOKEN , { expiresIn: '2h'})
+      res
+      .cookie('token', token , {
+        httpOnly: true,
+        secure: false,
+
+      })
+      .send({success:true})
+    })
+
+    app.post('/logout' , async(req, res) => {
+      const user= req.body;
+
+    res.clearCookie('token', {maxAge: 0}).send({success:true})
+    })
+
+    // Assignment API --------------
+// all data
     app.get('/assignments' , async(req, res) => {
       const cursor = assignmentCollection.find()
       const result = await cursor.toArray(cursor);
       res.send(result)
     })
-
+    // single data for view details and update
     app.get('/assignments/:id' ,async (req, res) => {
       const id = req.params.id;
       const query = {_id : new ObjectId(id)}
       const result =await assignmentCollection.findOne(query);
       res.send(result)
     })
+
 
   app.post('/assignments' , async(req, res) => {
     const assignment = req.body;
