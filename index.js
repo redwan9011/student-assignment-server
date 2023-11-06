@@ -39,6 +39,7 @@ async function run() {
     const database = client.db("assignmentDB");
     const assignmentCollection = database.collection("assignments");
 
+    const submitCollection = client.db("assignmentDB").collection("submittedAssignment")
     // ---------Auth API
 
     app.post('/jwt' , async(req, res) => {
@@ -110,6 +111,19 @@ async function run() {
     const result = await assignmentCollection.updateOne(filter, updateassignment, option);
     res.send(result)
   })
+
+    // -------Submit APi --------------//
+
+    app.post('/submit' , async(req, res) => {
+      const submit = req.body;
+      const result = await submitCollection.insertOne(submit)
+      res.send(result)
+    })
+
+    app.get('/submit' , async(req, res) => {
+      const result =await submitCollection.find().toArray()
+      res.send(result)
+    })
 
 
     // Send a ping to confirm a successful connection
