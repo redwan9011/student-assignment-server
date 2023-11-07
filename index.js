@@ -132,7 +132,11 @@ async function run() {
       const result = await submitMarkCollection.insertOne(submitMark);
       res.send(result)
     })
-
+    
+    app.get('/submitmark' , async(req, res) => {
+      const result = await submitMarkCollection.find().toArray()
+      res.send(result)
+    })
    
 
 
