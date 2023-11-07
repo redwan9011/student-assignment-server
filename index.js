@@ -66,10 +66,16 @@ async function run() {
     // Assignment API --------------
 // all data
     app.get('/assignments' , async(req, res) => {
+      console.log('pagination query' , req.query);
       const cursor = assignmentCollection.find()
       const result = await cursor.toArray(cursor);
       res.send(result)
     })
+
+    // app.get('/assignmentsCount' , async(req, res) => {
+    //   const count =await assignmentCollection.estimatedDocumentCount()
+    //   res.send({count})
+    // })
     // single data for view details and update
     app.get('/assignments/:id' ,async (req, res) => {
       const id = req.params.id;
@@ -126,17 +132,33 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/submit/:id' ,async (req, res) => {
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)}
+      const result =await submitCollection.findOne(query);
+      res.send(result)
+    })
+
+    app.patch('/submit/:id' , async(req, res) => {
+      const updateStatus = req.body;
+      const id = req.params.id;
+      const filter = { _id : new ObjectId(id)}
+     
+    })
+
     // -------Submit mark api--------//
     app.post('/submitmark', async(req, res)=> {
       const submitMark = req.body;
       const result = await submitMarkCollection.insertOne(submitMark);
       res.send(result)
     })
-    
+
     app.get('/submitmark' , async(req, res) => {
       const result = await submitMarkCollection.find().toArray()
       res.send(result)
     })
+
+   
    
 
 
