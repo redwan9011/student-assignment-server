@@ -40,6 +40,7 @@ async function run() {
     const assignmentCollection = database.collection("assignments");
 
     const submitCollection = client.db("assignmentDB").collection("submittedAssignment")
+    const submitMarkCollection = client.db("assignmentDB").collection("submitMark")
     // ---------Auth API
 
     app.post('/jwt' , async(req, res) => {
@@ -112,7 +113,7 @@ async function run() {
     res.send(result)
   })
 
-    // -------Submit APi --------------//
+    // -------Assignment  Submit APi --------------//
 
     app.post('/submit' , async(req, res) => {
       const submit = req.body;
@@ -124,6 +125,15 @@ async function run() {
       const result =await submitCollection.find().toArray()
       res.send(result)
     })
+
+    // -------Submit mark api--------//
+    app.post('/submitmark', async(req, res)=> {
+      const submitMark = req.body;
+      const result = await submitMarkCollection.insertOne(submitMark);
+      res.send(result)
+    })
+
+   
 
 
     // Send a ping to confirm a successful connection
