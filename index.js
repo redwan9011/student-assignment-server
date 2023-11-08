@@ -9,7 +9,9 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 app.use(cors({
   origin: [
-    'http://localhost:5173'
+    // 'http://localhost:5173'
+    'https://student-assignment-d7342.web.app',
+    'https://student-assignment-d7342.firebaseapp.com'
   ],
   credentials: true
 }))
@@ -62,7 +64,7 @@ const verifyToken = async (req, res, next) => {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const database = client.db("assignmentDB");
     const assignmentCollection = database.collection("assignments");
